@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Secrets et configuration locale
+.env
+.claude/settings.local.json
+
+# Documents de travail, hors dépôt
+CLAUDE.md
+JOURNAL.md
+PROJET.md
