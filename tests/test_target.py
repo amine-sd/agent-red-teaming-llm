@@ -3,6 +3,7 @@
 from fastapi.testclient import TestClient
 
 import target.app as app_module
+import target.pipeline as pipeline
 from target.corpus import Chunk, parse_fiche
 from target.llm import Reply
 from target.prompts import build_user_message
@@ -72,7 +73,7 @@ def test_user_message_tags_each_excerpt_with_its_fiche_id():
 
 def test_ask_keeps_only_citations_given_to_the_model(monkeypatch):
     monkeypatch.setattr(app_module, "_retriever", Retriever([chunk("F1", "Passeport en mairie.")]))
-    monkeypatch.setattr(app_module, "chat", lambda *args: Reply("Allez en mairie [F1] ou [F9].", 10, 5, 0.1))
+    monkeypatch.setattr(pipeline, "chat", lambda *args, **kwargs: Reply("Allez en mairie [F1] ou [F9].", 10, 5, 0.1))
     response = TestClient(app_module.app).post("/ask", json={"question": "Où demander un passeport ?"})
     assert response.status_code == 200
     body = response.json()

@@ -20,7 +20,7 @@ partir des
 de ce thème (fiches Particuliers publiées par la DILA sur data.gouv.fr, Licence Ouverte 2.0 ; le
 fichier utilisé et sa date figurent dans `data/corpus_manifest.json`). Elle est protégée
 par quatre garde-fous, activables séparément : un filtre en entrée, un filtre en sortie, une liste
-blanche d'outils et une limite de portée.
+blanche d'outils et une limite de portée ([détail](docs/garde-fous.md)).
 
 Quelques documents fictifs, signalés comme tels, sont plantés dans le corpus : des consignes
 cachées pour l'injection indirecte, et des documents hors périmètre pour la divulgation. Ils ne

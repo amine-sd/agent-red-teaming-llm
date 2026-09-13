@@ -46,14 +46,19 @@ class Retriever:
         with Path(path).open(encoding="utf-8") as f:
             return cls([Chunk(**json.loads(line)) for line in f])
 
-    def search(self, query: str, k: int) -> list[Chunk]:
+    def search(self, query: str, k: int, allow_internal: bool = True) -> list[Chunk]:
         """Return the k best chunks; chunks sharing no word with the query are never returned.
 
         The filter is on shared words, not on a positive score: BM25Okapi gives a word present in
         more than half of the chunks a negative weight, so a relevant chunk can score below zero.
+        With allow_internal=False, documents marked internal are skipped: that is the scope limit.
         """
         tokens = tokenize(query)
         scores = self._bm25.get_scores(tokens)
         ranked = sorted(range(len(self.chunks)), key=lambda i: scores[i], reverse=True)
-        matching = [i for i in ranked if self._vocab[i].intersection(tokens)]
+        matching = [
+            i
+            for i in ranked
+            if self._vocab[i].intersection(tokens) and (allow_internal or self.chunks[i].scope != "internal")
+        ]
         return [self.chunks[i] for i in matching[:k]]

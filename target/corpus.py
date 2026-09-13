@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Iterator
 
 import httpx
+import yaml
 
 from target.config import CHUNKS_PATH, DATA_DIR
 
@@ -30,6 +31,7 @@ DC = "{http://purl.org/dc/elements/1.1/}"
 
 RAW_DIR = DATA_DIR / "raw"
 MANIFEST_PATH = DATA_DIR / "corpus_manifest.json"
+PLANTED_PATH = DATA_DIR / "planted" / "internal_notes.yaml"
 
 # Only these elements carry the fiche's content; the others are links, references or glossary.
 CONTENT_TAGS = {"Introduction": "Introduction", "Texte": "", "ListeSituations": "",
@@ -46,6 +48,7 @@ class Chunk:
     url: str
     section: str
     text: str
+    scope: str = "public"  # "internal" for the planted documents the scope limit must hide
 
 
 def _flatten(el: ET.Element | None) -> str:
@@ -130,6 +133,29 @@ def parse_fiche(xml_bytes: bytes) -> list[Chunk]:
         for piece in _pack(lines, MAX_CHARS):
             chunks.append(Chunk(f"{fiche_id}-{len(chunks):03d}", fiche_id, title, url, section, piece))
     return chunks
+
+
+def load_planted(path: Path = PLANTED_PATH) -> list[Chunk]:
+    """Load the fictional documents planted for the attacks, cut into chunks like the fiches."""
+    docs = yaml.safe_load(path.read_text(encoding="utf-8")) or []
+    chunks: list[Chunk] = []
+    for doc in docs:
+        count = 0
+        for section in doc["sections"]:
+            lines = [line.strip() for line in section["text"].splitlines() if line.strip()]
+            for piece in _pack(lines, MAX_CHARS):
+                chunks.append(
+                    Chunk(f"{doc['id']}-{count:03d}", doc["id"], doc["title"], "", section["heading"], piece, doc["scope"])
+                )
+                count += 1
+    return chunks
+
+
+def load_chunks(chunks_path: Path = CHUNKS_PATH, planted_path: Path = PLANTED_PATH) -> list[Chunk]:
+    """The fiches' chunks plus the planted documents: everything the target's search can reach."""
+    with chunks_path.open(encoding="utf-8") as f:
+        public = [Chunk(**json.loads(line)) for line in f]
+    return public + (load_planted(planted_path) if planted_path.exists() else [])
 
 
 def download_archive(dest_dir: Path = RAW_DIR) -> tuple[Path, str]:
