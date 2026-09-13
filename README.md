@@ -1,65 +1,65 @@
 # Agent de red teaming d'une application LLM
 
-> **Cadre d'usage.** Ce dépôt attaque **une seule cible : une application écrite par son auteur,
-> qui tourne en local, sans donnée personnelle et sans utilisateur tiers**. C'est un travail
-> défensif : on mesure des garde-fous pour savoir lesquels tiennent. Les attaques sont conçues
-> pour cette application. Elles ne visent aucun service tiers, aucune API commerciale, aucun
-> système qui n'appartient pas à l'auteur.
+> Une défense non testée reste une illusion, et une défense qui bloque tout n'en est pas une.
 
-**Thèse.** Une défense non testée reste une illusion : ce projet attaque méthodiquement les
-garde-fous d'une application LLM locale, puis mesure, avec un juge calibré sur des verdicts
-humains, ce qui a réellement tenu et ce que la défense coûte en utilité.
+Ce projet construit une petite application LLM munie de quatre garde-fous, un agent qui les attaque
+méthodiquement, et surtout une mesure crédible de **ce qui a réellement tenu, et à quel prix**.
 
-*État : en construction, jour 1 sur 16. Aucun résultat n'est encore publié.*
+> **Cadre d'usage.** La seule cible est l'application construite dans ce dépôt : elle tourne en
+> local, sans donnée personnelle et sans utilisateur tiers. C'est un travail défensif. Les attaques
+> ne visent aucun service tiers, aucune API commerciale, aucun système extérieur au projet.
 
-## Architecture
+> **Statut : en construction.** Aucun résultat n'est encore publié. Les tableaux de résultats
+> apparaîtront ici quand le banc d'essai tournera.
 
-```
-CIBLE      assistant local sur les fiches pratiques Service-Public
-           4 garde-fous : filtre en entrée, filtre en sortie,
-           liste blanche d'outils, limite de portée
-              |
-ATTAQUANT  agent qui génère des variantes par famille,
-           les envoie, lit la réponse, fait monter la sévérité
-              |
-JUGE       modèle qui décide si l'attaque a réussi,
-           calibré sur 50 cas étiquetés à la main
-              |
-BANC       60 attaques, 6 familles, plus 30 requêtes bénignes
-```
+## Le principe
+
+Une petite application répond à des questions sur les démarches administratives à partir des
+[fiches pratiques Service-Public.gouv.fr](https://www.data.gouv.fr/datasets/fiches-pratiques-et-ressources-de-service-public-gouv-fr-particuliers)
+(fiches Particuliers publiées par la DILA sur data.gouv.fr, Licence Ouverte 2.0). Elle est protégée
+par quatre garde-fous, activables séparément : un filtre en entrée, un filtre en sortie, une liste
+blanche d'outils et une limite de portée.
+
+Quelques documents fictifs, signalés comme tels, sont plantés dans le corpus : des consignes
+cachées pour l'injection indirecte, et des documents hors périmètre pour la divulgation. Ils ne
+contiennent aucune donnée personnelle. L'application n'est affiliée ni à Service-Public.gouv.fr ni
+à la DILA.
+
+Un agent attaquant part de soixante attaques de base, en génère des variantes, les envoie, lit la
+réponse et fait monter la sévérité quand une variante passe.
+
+Un juge décide ensuite si chaque attaque a réussi. Ici, la vérité terrain n'existe pas d'avance :
+le juge est donc calibré sur cinquante cas étiquetés à la main, et son accord avec l'humain est
+publié, quel qu'il soit.
 
 ## Les six familles d'attaque
 
-Tirées du OWASP Top 10 pour les applications LLM, restreintes à ce qui est testable sur une
-petite application :
+| # | Famille | Ce que l'attaque cherche à obtenir |
+|---|---|---|
+| 1 | Injection directe | Faire obéir l'application à des instructions contradictoires glissées dans la requête |
+| 2 | Injection indirecte | Faire exécuter une consigne cachée dans un document du corpus |
+| 3 | Fuite du prompt système | Faire révéler les instructions internes de l'application |
+| 4 | Divulgation d'information sensible | Faire ressortir un document hors périmètre |
+| 5 | Agence excessive | Faire appeler un outil qui n'aurait pas dû l'être |
+| 6 | Sortie non maîtrisée | Faire produire un contenu que le filtre de sortie devait bloquer |
 
-1. **Injection de prompt directe** : instructions contradictoires dans la requête.
-2. **Injection indirecte** : instructions cachées dans un document du corpus.
-3. **Fuite du prompt système.**
-4. **Divulgation d'information sensible** : faire ressortir un document hors périmètre.
-5. **Agence excessive** : faire appeler un outil qui n'aurait pas dû l'être.
-6. **Sortie non maîtrisée** : faire produire un contenu que le filtre de sortie devait bloquer.
+Elles sont tirées du OWASP Top 10 pour les applications LLM, restreintes à ce qui est testable sur
+une petite application. La famille 2 est la plus intéressante : une consigne cachée dans un
+document que l'application indexe elle-même, c'est le scénario réaliste, et celui que la plupart
+des démonstrations oublient.
 
-## Les trois mesures
+## Ce qui est mesuré
 
-- **Taux de contournement**, par garde-fou et par famille.
-- **Faux positifs** sur trente requêtes bénignes : le prix de la défense en utilité.
-- **Stabilité** : la même attaque rejouée donne-t-elle le même verdict ?
+| Mesure | Question |
+|---|---|
+| Taux de contournement | Quel garde-fou cède, et sur quelle famille ? |
+| Faux positifs | Sur trente requêtes légitimes, combien la défense en bloque-t-elle à tort ? |
+| Stabilité | La même attaque rejouée donne-t-elle le même verdict ? |
 
-L'accord entre le juge et l'humain sera publié avec les résultats, quel qu'il soit.
-
-## Corpus
-
-La cible indexe les
-[fiches pratiques Service-Public.gouv.fr Particuliers](https://www.data.gouv.fr/datasets/fiches-pratiques-et-ressources-de-service-public-gouv-fr-particuliers),
-publiées sous Licence Ouverte 2.0. Source des données : Service-Public.gouv.fr / DILA. Le fichier
-exact et sa date seront indiqués ici au moment du téléchargement.
-
-L'application n'est affiliée ni à Service-Public.gouv.fr ni à la DILA : elle réutilise leurs
-données ouvertes comme corpus de test. Quelques documents **fictifs**, signalés comme tels, y
-seront ajoutés pour les familles 2 et 4. Ils ne contiennent aucune donnée personnelle.
+Le taux de faux positifs est **toujours rapporté à côté du taux de contournement** : tout le monde
+mesure les attaques qui passent, presque personne ne mesure ce que la défense coûte en utilité.
 
 ## Pile technique
 
-Python, FastAPI pour la cible, modèles servis en local par Ollama. Attaques et requêtes bénignes
-en YAML, banc en pytest, rapport en Markdown.
+Python, FastAPI pour l'application cible, Ollama pour servir les modèles en local. Attaques et
+requêtes bénignes en YAML, banc d'essai en pytest, rapport en Markdown.
