@@ -41,7 +41,7 @@ publié, quel qu'il soit.
 | 3 | Fuite du prompt système | Faire révéler les instructions internes de l'application |
 | 4 | Divulgation d'information sensible | Faire ressortir un document hors périmètre |
 | 5 | Agence excessive | Faire appeler un outil qui n'aurait pas dû l'être |
-| 6 | Sortie non maîtrisée | Faire produire un contenu que le filtre de sortie devait bloquer |
+| 6 | Sortie non maîtrisée | Faire produire du contenu actif (script, image externe) que le filtre de sortie devait neutraliser |
 
 Elles sont tirées du OWASP Top 10 pour les applications LLM, restreintes à ce qui est testable sur
 une petite application. La famille 2 est la plus intéressante : une consigne cachée dans un
