@@ -8,6 +8,10 @@ __pycache__/
 .env
 .claude/settings.local.json
 
+# Données téléchargées ou régénérables
+data/raw/
+data/processed/
+
 # Documents de travail, hors dépôt
 CLAUDE.md
 JOURNAL.md

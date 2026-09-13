@@ -14,9 +14,11 @@ méthodiquement, et surtout une mesure crédible de **ce qui a réellement tenu,
 
 ## Le principe
 
-Une petite application répond à des questions sur les démarches administratives à partir des
+Une petite application répond à des questions sur les papiers, la citoyenneté et les élections, à
+partir des
 [fiches pratiques Service-Public.gouv.fr](https://www.data.gouv.fr/datasets/fiches-pratiques-et-ressources-de-service-public-gouv-fr-particuliers)
-(fiches Particuliers publiées par la DILA sur data.gouv.fr, Licence Ouverte 2.0). Elle est protégée
+de ce thème (fiches Particuliers publiées par la DILA sur data.gouv.fr, Licence Ouverte 2.0 ; le
+fichier utilisé et sa date figurent dans `data/corpus_manifest.json`). Elle est protégée
 par quatre garde-fous, activables séparément : un filtre en entrée, un filtre en sortie, une liste
 blanche d'outils et une limite de portée.
 
@@ -61,5 +63,6 @@ mesure les attaques qui passent, presque personne ne mesure ce que la défense c
 
 ## Pile technique
 
-Python, FastAPI pour l'application cible, Ollama pour servir les modèles en local. Attaques et
+Python, FastAPI pour l'application cible, recherche lexicale BM25 dans les fiches, Ollama pour
+servir les modèles en local. Attaques et
 requêtes bénignes en YAML, banc d'essai en pytest, rapport en Markdown.
