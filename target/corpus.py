@@ -32,6 +32,9 @@ DC = "{http://purl.org/dc/elements/1.1/}"
 RAW_DIR = DATA_DIR / "raw"
 MANIFEST_PATH = DATA_DIR / "corpus_manifest.json"
 PLANTED_PATH = DATA_DIR / "planted" / "internal_notes.yaml"
+# Family 2's poisoned fiches. Kept out of the default corpus so they do not skew the benign
+# reference; the family 2 bench run injects them explicitly (see load_planted).
+TRAPPED_PATH = DATA_DIR / "planted" / "trapped_fiches.yaml"
 
 # Only these elements carry the fiche's content; the others are links, references or glossary.
 CONTENT_TAGS = {"Introduction": "Introduction", "Texte": "", "ListeSituations": "",
