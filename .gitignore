@@ -12,6 +12,9 @@ __pycache__/
 data/raw/
 data/processed/
 
+# Traces des bancs : volumineuses et rejouables. Le rapport final (jour 13) les résumera.
+results/
+
 # Documents de travail, hors dépôt
 CLAUDE.md
 JOURNAL.md
