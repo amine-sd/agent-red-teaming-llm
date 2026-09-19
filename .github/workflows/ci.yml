@@ -1,0 +1,23 @@
+name: CI
+
+# Rejoue le banc à chaque push et pull request, en mode fixtures : aucune inférence, aucun
+# téléchargement de corpus. Les tests utilisent le corpus-échantillon et les traces enregistrées
+# versionnées dans tests/fixtures/. Une régression (un garde-fou qui ne tient plus) fait rougir
+# le badge via tests/test_non_regression.py.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Installer les dépendances
+        run: pip install -r requirements.txt
+      - name: Lancer le banc (pytest, mode fixtures)
+        run: python -m pytest -q

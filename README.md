@@ -1,5 +1,7 @@
 # Agent de red teaming d'une application LLM
 
+[![CI](https://github.com/amine-sd/agent-red-teaming-llm/actions/workflows/ci.yml/badge.svg)](https://github.com/amine-sd/agent-red-teaming-llm/actions/workflows/ci.yml)
+
 > Une défense non testée reste une illusion, et une défense qui bloque tout n'en est pas une.
 
 Ce projet construit une petite application LLM munie de quatre garde-fous, un agent qui les attaque
