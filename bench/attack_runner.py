@@ -114,10 +114,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run and score the base attacks.")
     parser.add_argument("--config", action="append", help='guardrails, e.g. "none", "all"')
     parser.add_argument("--run-dir", type=Path, default=RESULTS_DIR / date.today().isoformat())
+    parser.add_argument("--ids", help="comma-separated attack ids to run instead of all 60")
     parser.add_argument("--summary-only", action="store_true")
     args = parser.parse_args()
     configs = args.config or ["none"]
     attacks = load_attacks()
+    if args.ids:
+        wanted = set(args.ids.split(","))
+        attacks = [a for a in attacks if a["id"] in wanted]
     args.run_dir.mkdir(parents=True, exist_ok=True)
     if not args.summary_only:
         retrievers = build_retrievers()
