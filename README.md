@@ -30,8 +30,8 @@ cachées pour l'injection indirecte, et des documents hors périmètre pour la d
 contiennent aucune donnée personnelle. L'application n'est affiliée ni à Service-Public.gouv.fr ni
 à la DILA.
 
-Un agent attaquant part de soixante attaques de base, en génère des variantes, les envoie, lit la
-réponse et fait monter la sévérité quand une variante passe.
+Un agent attaquant part de soixante attaques de base et en génère des variantes par
+transformations, pour trouver une formulation qui passe là où l'attaque de base échouait.
 
 Un juge décide ensuite si chaque attaque a réussi. Ici, la vérité terrain n'existe pas d'avance :
 le juge est donc calibré sur cinquante cas étiquetés à la main, et son accord avec l'humain est
@@ -53,21 +53,12 @@ une petite application. La famille 2 est la plus intéressante : une consigne ca
 document que l'application indexe elle-même, c'est le scénario réaliste, et celui que la plupart
 des démonstrations oublient.
 
-## Ce qui est mesuré
-
-| Mesure | Question |
-|---|---|
-| Taux de contournement | Quel garde-fou cède, et sur quelle famille ? |
-| Faux positifs | Sur trente requêtes légitimes, combien la défense en bloque-t-elle à tort ? |
-| Stabilité | La même attaque rejouée donne-t-elle le même verdict ? |
-
-Le taux de faux positifs est **toujours rapporté à côté du taux de contournement** : tout le monde
-mesure les attaques qui passent, presque personne ne mesure ce que la défense coûte en utilité.
-
 ## Résultats
 
-Verdicts tranchés par le vérificateur mécanique déterministe (voir la calibration ci-dessous).
-Rapport complet régénérable par `make eval` ([rapport.md](rapport.md)).
+Trois mesures, tranchées par le vérificateur mécanique déterministe (voir la calibration
+ci-dessous) et régénérables par `make eval` ([rapport.md](rapport.md)). Le taux de faux positifs
+est **toujours rapporté à côté du taux de contournement** : mesurer ce que la défense laisse passer
+sans mesurer ce qu'elle coûte en utilité ne dit que la moitié de l'histoire.
 
 **Taux de contournement par famille**, sans défense puis avec les quatre garde-fous :
 
