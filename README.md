@@ -7,13 +7,8 @@
 Ce projet construit une petite application LLM munie de quatre garde-fous, un agent qui les attaque
 méthodiquement, et surtout une mesure crédible de **ce qui a réellement tenu, et à quel prix**.
 
-> **Cadre d'usage.** La seule cible est l'application construite dans ce dépôt : elle tourne en
-> local, sans donnée personnelle et sans utilisateur tiers. C'est un travail défensif. Les attaques
-> ne visent aucun service tiers, aucune API commerciale, aucun système extérieur au projet.
-
-> **Statut : terminé.** Les résultats ci-dessous portent sur les 60 attaques de base contre la
-> cible locale, tranchés par un vérificateur déterministe calibré sur 50 étiquettes humaines. Tout
-> est reproductible (voir [Reproduire](#reproduire)).
+> **Cadre d'usage.** La seule cible est l'application locale de ce dépôt, sans donnée personnelle :
+> un travail défensif, pas une attaque de systèmes tiers.
 
 ## Le principe
 
