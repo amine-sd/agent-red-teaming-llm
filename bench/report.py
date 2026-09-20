@@ -23,6 +23,7 @@ NONE_DIR = ROOT / "results" / "attacks" / "base-none"
 ALL_DIR = ROOT / "results" / "attacks" / "base-all"
 NONE2_DIR = ROOT / "results" / "attacks" / "base-none-2"
 BENIGN_DIR = ROOT / "results" / "benign" / "reference"
+LABELS_PATH = ROOT / "data" / "labels_humains.yaml"
 REPORT_PATH = ROOT / "rapport.md"
 
 # The 20 attacks replayed for the stability measure (stratified across families).
@@ -43,26 +44,41 @@ def _pct(n: int, d: int) -> str:
     return f"{n}/{d} ({100 * n / d:.0f} %)" if d else "n/a"
 
 
-def _bypass(recs: dict, ids: list[str]) -> str:
-    """Bypass rate over the attacks the mechanical verdict actually decides (excludes 'à juger')."""
+def _bypass(recs: dict, ids: list[str]) -> str | None:
+    """Bypass rate over the attacks the mechanical verdict actually decides. None if it abstains
+    on all of them (family 1: 'à juger')."""
     scored = [i for i in ids if i in recs and recs[i]["verdict"]["verdict"] != "à_juger"]
     if not scored:
-        return "à juger"  # the mechanical verdict abstains (family 1)
+        return None
     return _pct(sum(recs[i]["verdict"]["verdict"] == "réussi" for i in scored), len(scored))
+
+
+def _human_bypass(family: int) -> tuple[int, int]:
+    """Réussi count and total among the hand-labelled attacks of a family (undefended pass)."""
+    cases = yaml.safe_load(LABELS_PATH.read_text(encoding="utf-8"))
+    fam = [c for c in cases if c["id"].startswith(f"A{family}-") and c["verdict"]]
+    return sum(c["verdict"] == "réussi" for c in fam), len(fam)
 
 
 def bypass_section(none: dict, allr: dict) -> list[str]:
     lines = ["## 1. Taux de contournement par famille", "",
-             "Attaque réussie = verdict mécanique « réussi », sur les attaques que le vérificateur "
-             "tranche. La famille 1 (respect des règles) demande un jugement : le mécanique s'abstient "
-             "(« à juger »), elle est traitée par le juge et l'humain.", "",
+             "Attaque réussie = verdict mécanique « réussi ». La famille 1 (respect des règles) demande "
+             "un jugement : le vérificateur mécanique s'abstient, ses chiffres viennent alors de "
+             "l'échantillon étiqueté à la main.", "",
              "| Famille | Sans défense | Avec les 4 garde-fous |", "|---|---|---|"]
     for family in range(1, 7):
         ids = [i for i, r in none.items() if r["family"] == family]
-        lines.append(f"| {family}. {FAMILY_NAMES[family]} | {_bypass(none, ids)} | {_bypass(allr, ids)} |")
-    lines += ["", "Famille 1 : sur les 9 attaques étiquetées à la main, 6 réussissent sans défense "
-              "(l'accord juge/humain y est faible, voir la calibration). Le vérificateur mécanique ne "
-              "la mesure pas."]
+        none_rate = _bypass(none, ids)
+        if none_rate is None:  # mechanical abstains (family 1)
+            reussi, total = _human_bypass(family)
+            none_cell = f"{reussi}/{total} (échantillon humain)*" if total else "non mesuré*"
+            all_cell = "non mesuré (pas d'étiquette humaine)"
+        else:
+            none_cell, all_cell = none_rate, _bypass(allr, ids)
+        lines.append(f"| {family}. {FAMILY_NAMES[family]} | {none_cell} | {all_cell} |")
+    lines += ["", "\\* Le vérificateur mécanique ne tranche pas la famille 1 (respect des règles, "
+              "jugement requis) : le chiffre « sans défense » vient de l'échantillon étiqueté à la "
+              "main (9 des 10 attaques de la famille), et la passe défendue n'a pas été étiquetée."]
 
     blocked_by: Counter = Counter()
     for i, r in none.items():

@@ -73,15 +73,16 @@ Rapport complet régénérable par `make eval` ([rapport.md](rapport.md)).
 
 | Famille | Sans défense | Avec les 4 garde-fous |
 |---|---|---|
-| 1. Injection directe | à juger* | à juger* |
+| 1. Injection directe | 6/9 (échantillon humain)* | non mesuré (pas d'étiquette humaine) |
 | 2. Injection indirecte | 50 % | 0 % |
 | 3. Fuite du prompt | 70 % | 0 % |
 | 4. Divulgation | 80 % | 0 % |
 | 5. Agence excessive | 70 % | 0 % |
 | 6. Sortie active | 60 % | 0 % |
 
-\* Le vérificateur mécanique ne tranche pas la famille 1 (respect des règles, jugement requis). Sur
-l'échantillon étiqueté à la main, 6 attaques sur 9 réussissent sans défense.
+\* Le vérificateur mécanique ne tranche pas la famille 1 (respect des règles, jugement requis) : le
+chiffre « sans défense » vient de l'échantillon étiqueté à la main (9 des 10 attaques de la
+famille), et la passe défendue n'a pas été étiquetée.
 
 Les garde-fous ramènent le contournement mesurable à **0 %**. Attribution par les événements
 journalisés : le filtre de sortie et la limite de portée bloquent 11 attaques chacun, le filtre en
